@@ -1,15 +1,45 @@
-# jsonv2
+# **@djn/jsonv2**
 
-To install dependencies:
+[![JSR](https://jsr.io/badges/@djn/toolkit)](https://jsr.io/@djn/toolkit)
+[![Bun](https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white)](https://bun.sh)
+
+A simple json file apis , support deep path , +15 api.
+
+## Features
+
+- JSON control
+- classic apis (get,set,del,has)
+- Compatible with Bunjs && Nodejs
+- Deep access layers
+- Support types on every api
+
+## Installation
 
 ```bash
-bun install
+bunx jsr add @djn/jsonv2
 ```
 
-To run:
+### **Example:**
 
-```bash
-bun run index.ts
+```ts
+import {Json} from "@djn/jsonv2"
+
+const instance = Json.openFile("./file.json", {
+  createOnMissing: true,
+  separator: "/",
+});
+
+
+//classic apis:
+// set
+instance.set(key:string, value:any , save?:boolean);
+// get 
+instance.get<string>(key: string);
+// has
+instance.has(key: string);
+// del
+instance.delete(key: string , save?:boolean);
+
+//save edits 
+ instance.save();
 ```
-
-This project was created using `bun init` in bun v1.4.0. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
