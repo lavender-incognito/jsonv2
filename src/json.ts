@@ -25,8 +25,8 @@ export class Json {
       }
 
       fs.writeFileSync(filepath, JSON.stringify({}, null, 2));
-      return new Json(filepath, options.separator);
     }
+    return new Json(filepath, options.separator);
   }
 
   //load content
@@ -56,7 +56,11 @@ export class Json {
   }
 
   //delete key
-  public delete(key: string): void {
-    if (key in this.fileContent) delete this.fileContent[key];
+  public delete(key: string, save?: boolean): void {
+    if (key in this.fileContent) {
+      delete this.fileContent[key];
+      if (save) this.save();
+    }
   }
+  
 }
