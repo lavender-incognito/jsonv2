@@ -1,5 +1,5 @@
 import fs from "fs";
-import type { Line, OpenOptions, Separators } from "./types";
+import type { Line, OpenOptions, Separators, SetManyOptions } from "./types";
 
 export class Json {
   private fileContent: any;
@@ -13,7 +13,7 @@ export class Json {
   }
 
   //static open file Func();
-  static openFile(filepath: string, options: OpenOptions):Json {
+  static openFile(filepath: string, options: OpenOptions): Json {
     if (!filepath.endsWith(".json")) {
       throw new Error("Filepath must end with .json");
     }
@@ -73,10 +73,16 @@ export class Json {
   }
 
   //set many
-  public setMany(lines: Line[], save?: boolean): void {
-    lines.forEach((line) => {
-      this.fileContent[line.key] = line.value;
-    });
+  public setMany(lines: Line[], options: SetManyOptions): void {
+    const { save, onConflit } = options;
+    for (const line of lines) {
+      const { key, value } = line;
+      if (!(key in this.fileContent) || onConflit === "update") {
+        this.fileContent[key] = value;
+        continue;
+      }
+    }
+
     if (save) this.save();
   }
 

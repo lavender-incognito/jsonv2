@@ -10,3 +10,7 @@ export type Line = {
   value: any;
 };
 
+export type SetManyOptions = {
+  save?: boolean;
+  onConflit: "update" | "skip";
+};
