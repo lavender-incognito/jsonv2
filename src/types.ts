@@ -4,3 +4,9 @@ export type OpenOptions = {
   separator: Separators;
   LRU_CACHE?: boolean;
 };
+
+export type Line = {
+  key: string;
+  value: any;
+};
+

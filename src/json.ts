@@ -1,6 +1,5 @@
 import fs from "fs";
-import type { OpenOptions, Separators } from "./types";
-import { open } from "inspector/promises";
+import type { Line, OpenOptions, Separators } from "./types";
 
 export class Json {
   private fileContent: any;
@@ -14,7 +13,7 @@ export class Json {
   }
 
   //static open file Func();
-  static openFile(filepath: string, options: OpenOptions) {
+  static openFile(filepath: string, options: OpenOptions):Json {
     if (!filepath.endsWith(".json")) {
       throw new Error("Filepath must end with .json");
     }
@@ -62,5 +61,50 @@ export class Json {
       if (save) this.save();
     }
   }
-  
+
+  //is Null
+  public isNull(key: string): boolean {
+    return this.fileContent[key] === null;
+  }
+
+  //is Non null
+  public isNonNull(key: string): boolean {
+    return this.fileContent[key] !== null;
+  }
+
+  //set many
+  public setMany(lines: Line[], save?: boolean): void {
+    lines.forEach((line) => {
+      this.fileContent[line.key] = line.value;
+    });
+    if (save) this.save();
+  }
+
+  //get many
+  public getMany<T extends unknown[]>(...keys: string[]): T {
+    const result = [];
+    for (const key of keys) {
+      result.push(this.fileContent[key]);
+    }
+    return result as T;
+  }
+
+  //get deep path
+  public getPath<T extends unknown>(path: string): T | undefined {
+    let pathArray = path.split(this.separator);
+    if (!pathArray || pathArray.length <= 1) return undefined;
+
+    let dataPoint = this.fileContent[pathArray[0]!];
+    if (!dataPoint) return undefined;
+
+    pathArray.shift();
+
+    for (const i of pathArray) {
+      if (typeof dataPoint !== "object" || !(i in dataPoint)) {
+        return undefined;
+      }
+      dataPoint = dataPoint[i];
+    }
+    return dataPoint as T;
+  }
 }

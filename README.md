@@ -41,5 +41,5 @@ instance.has(key: string);
 instance.delete(key: string , save?:boolean);
 
 //save edits 
- instance.save();
+instance.save();
 ```
