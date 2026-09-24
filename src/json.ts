@@ -72,6 +72,11 @@ export class Json {
     return this.fileContent[key] !== null;
   }
 
+  // make Null
+  public makeNull(key: string) {
+    this.fileContent[key] = null;
+  }
+
   //set many
   public setMany(lines: Line[], options: SetManyOptions): void {
     const { save, onConflit } = options;
@@ -114,3 +119,5 @@ export class Json {
     return dataPoint as T;
   }
 }
+
+// add (makeNull(key);)
