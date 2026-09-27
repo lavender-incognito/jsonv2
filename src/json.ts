@@ -13,7 +13,7 @@ export class Json {
   }
 
   //static open file Func();
-  static openFile(filepath: string, options: OpenOptions): Json {
+  static openFile(filepath: `${string}.json`, options: OpenOptions): Json {
     if (!filepath.endsWith(".json")) {
       throw new Error("Filepath must end with .json");
     }
