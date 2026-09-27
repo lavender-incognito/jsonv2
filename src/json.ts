@@ -2,14 +2,14 @@ import fs from "fs";
 import type { Line, OpenOptions, Separators, SetManyOptions } from "./types";
 
 export class Json {
-  private fileContent: any;
+  private _data: any;
   private filepath: string;
   private separator: string;
 
   constructor(filepath: string, separator: Separators) {
     this.filepath = filepath;
     this.separator = separator;
-    this.fileContent = this.load();
+    this._data = this.load();
   }
 
   //static open file Func();
@@ -35,46 +35,46 @@ export class Json {
 
   //save to file
   public save(): void {
-    fs.writeFileSync(this.filepath, JSON.stringify(this.fileContent, null, 2));
+    fs.writeFileSync(this.filepath, JSON.stringify(this._data, null, 2));
   }
 
   //get key
   public get<T extends unknown>(key: string): T {
-    return this.fileContent[key];
+    return this._data[key];
   }
 
   //set or update value with key
   public set(key: string, value: any, save?: boolean): void {
-    this.fileContent[key] = value;
+    this._data[key] = value;
     if (save) this.save();
   }
 
   //has key
   public has(key: string): boolean {
-    return key in this.fileContent;
+    return key in this._data;
   }
 
   //delete key
   public delete(key: string, save?: boolean): void {
-    if (key in this.fileContent) {
-      delete this.fileContent[key];
+    if (key in this._data) {
+      delete this._data[key];
       if (save) this.save();
     }
   }
 
   //is Null
   public isNull(key: string): boolean {
-    return this.fileContent[key] === null;
+    return this._data[key] === null;
   }
 
   //is Non null
   public isNonNull(key: string): boolean {
-    return this.fileContent[key] !== null;
+    return this._data[key] !== null;
   }
 
   // make Null
   public makeNull(key: string) {
-    this.fileContent[key] = null;
+    this._data[key] = null;
   }
 
   //set many
@@ -82,8 +82,8 @@ export class Json {
     const { save, onConflit } = options;
     for (const line of lines) {
       const { key, value } = line;
-      if (!(key in this.fileContent) || onConflit === "update") {
-        this.fileContent[key] = value;
+      if (!(key in this._data) || onConflit === "update") {
+        this._data[key] = value;
         continue;
       }
     }
@@ -95,7 +95,7 @@ export class Json {
   public getMany<T extends unknown[]>(...keys: string[]): T {
     const result = [];
     for (const key of keys) {
-      result.push(this.fileContent[key]);
+      result.push(this._data[key]);
     }
     return result as T;
   }
@@ -105,7 +105,7 @@ export class Json {
     let pathArray = path.split(this.separator);
     if (!pathArray || pathArray.length <= 1) return undefined;
 
-    let dataPoint = this.fileContent[pathArray[0]!];
+    let dataPoint = this._data[pathArray[0]!];
     if (!dataPoint) return undefined;
 
     pathArray.shift();
