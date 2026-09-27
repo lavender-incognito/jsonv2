@@ -1,5 +1,11 @@
 import fs from "fs";
-import type { Line, OpenOptions, Separators, SetManyOptions } from "./types";
+import type {
+  JsonFile,
+  Line,
+  OpenOptions,
+  Separators,
+  SetManyOptions,
+} from "./types";
 
 export class Json {
   private _data: any;
@@ -12,8 +18,8 @@ export class Json {
     this._data = this.load();
   }
 
-  //static open file Func();
-  static openFile(filepath: `${string}.json`, options: OpenOptions): Json {
+  //static open Func();
+  static open(filepath: JsonFile, options: OpenOptions): Json {
     if (!filepath.endsWith(".json")) {
       throw new Error("Filepath must end with .json");
     }
