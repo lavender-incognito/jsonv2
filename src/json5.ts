@@ -1,19 +1,20 @@
+import { JSON5 } from "bun";
 import fs from "fs";
 import type {
   CacheMap,
   DataOtpions,
   DataStruct,
-  DeleteOptions,
-  HasOptions,
-  JsonFile,
+  DeleteOptions5,
+  HasOptions5,
+  Json5File,
   Line,
   Merge,
   OpenOptions,
-  SetManyOptions,
-  SetOptions,
+  SetManyOptions5,
+  SetOptions5,
 } from "./types";
 
-class Json {
+class Json5 {
   private _cache: CacheMap = new Map();
   private filepath: string;
 
@@ -23,24 +24,24 @@ class Json {
   }
 
   //open json5 file
-  static open(filepath: JsonFile, options: OpenOptions) {
-    if (!filepath.endsWith(".json")) {
+  static open(filepath: Json5File, options: OpenOptions) {
+    if (!filepath.endsWith(".json5")) {
       throw new Error("Filepath must end with .json5");
     }
 
     if (!fs.existsSync(filepath)) {
       if (!options.createOnMissing) {
-        throw new Error(`Json file: ${filepath} doesn't exist`);
+        throw new Error(`Json5 file: ${filepath} doesn't exist`);
       }
 
-      fs.writeFileSync(filepath, JSON.stringify({}, null, 0));
+      fs.writeFileSync(filepath, JSON5.stringify({}, null, 0)!);
     }
-    return new Json(filepath);
+    return new Json5(filepath);
   }
 
   //load content
   private load(): void {
-    const content = JSON.parse(
+    const content = JSON5.parse(
       fs.readFileSync(this.filepath, "utf-8"),
     ) as DataStruct;
 
@@ -60,7 +61,7 @@ class Json {
       dataToWrite[key] = value;
     }
     //convert to string && write  to file
-    const stringifiedData = JSON.stringify(dataToWrite, null, 2)!;
+    const stringifiedData = JSON5.stringify(dataToWrite, null, 2)!;
     fs.writeFileSync(this.filepath, stringifiedData);
   }
 
@@ -99,14 +100,14 @@ class Json {
   }
 
   //set or update data
-  public set(key: string, newValue: any, options?: SetOptions): void {
+  public set(key: string, newValue: any, options?: SetOptions5): void {
     const writeInFile = options?.write ?? false;
     this._cache.set(key, { isWritten: writeInFile, value: newValue });
     if (writeInFile) this.writeReadyElements();
   }
 
   // has key
-  public has(key: string, options?: HasOptions): boolean {
+  public has(key: string, options?: HasOptions5): boolean {
     const wrinttenMergeOnly = options?.wrinttenOnlyMerge ?? false;
     if (!wrinttenMergeOnly) return this._cache.has(key);
     const search = this.searchKeyInMerge(key, "written");
@@ -114,7 +115,7 @@ class Json {
   }
 
   //delete key
-  public delete(key: string, options?: DeleteOptions): void {
+  public delete(key: string, options?: DeleteOptions5): void {
     const writeInFile = options?.write ?? false;
     if (!this._cache.has(key)) return;
     this._cache.delete(key);
@@ -132,7 +133,7 @@ class Json {
   }
 
   //set many
-  public setMany(lines: Line[], options: SetManyOptions): void {
+  public setMany(lines: Line[], options: SetManyOptions5): void {
     const writeInFile = options.write ?? false;
     const onConflit = options.onConflit;
     for (const line of lines) {
@@ -161,4 +162,4 @@ class Json {
   }
 }
 
-export { Json };
+export { Json5 };
