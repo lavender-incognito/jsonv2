@@ -13,6 +13,8 @@ import type {
   SetOptions,
 } from "./types";
 
+//todo add writeAllUpdates();
+
 class Json {
   private _cache: CacheMap = new Map();
   private filepath: string;

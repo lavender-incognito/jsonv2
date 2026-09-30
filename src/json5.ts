@@ -14,6 +14,8 @@ import type {
   SetOptions5,
 } from "./types";
 
+//todo add writeAllUpdates();
+
 class Json5 {
   private _cache: CacheMap = new Map();
   private filepath: string;
