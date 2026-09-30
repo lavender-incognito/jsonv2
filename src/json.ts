@@ -25,7 +25,7 @@ class Json {
   }
 
   //open json5 file
-  static open(filepath: JsonFile, options: OpenOptions) {
+  static open(filepath: JsonFile, options: OpenOptions):Json {
     if (!filepath.endsWith(".json")) {
       throw new Error("Filepath must end with .json5");
     }

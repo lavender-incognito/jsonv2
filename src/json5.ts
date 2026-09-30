@@ -15,7 +15,7 @@ import type {
 } from "./types";
 
 //todo add writeAllUpdates();
-
+//todo types precisions
 class Json5 {
   private _cache: CacheMap = new Map();
   private filepath: string;
@@ -26,7 +26,7 @@ class Json5 {
   }
 
   //open json5 file
-  static open(filepath: Json5File, options: OpenOptions) {
+  static open(filepath: Json5File, options: OpenOptions):Json5 {
     if (!filepath.endsWith(".json5")) {
       throw new Error("Filepath must end with .json5");
     }
