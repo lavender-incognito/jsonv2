@@ -25,7 +25,7 @@ class Json {
   }
 
   //open json5 file
-  static open(filepath: JsonFile, options: OpenOptions):Json {
+  static open(filepath: JsonFile, options: OpenOptions): Json {
     if (!filepath.endsWith(".json")) {
       throw new Error("Filepath must end with .json5");
     }
@@ -77,6 +77,22 @@ class Json {
 
     if (merge === "unwritten" && !target?.isWritten) {
       return { key, value: target?.value };
+    }
+  }
+
+  //write Changes
+  public writeChanges() {
+    let shouldRewrite: boolean = false;
+    const entries = this._cache.entries();
+    const dataToWrite: DataStruct = {};
+    for (const entrie of entries) {
+      const [key, { isWritten, value }] = entrie;
+      if (!shouldRewrite && !isWritten) shouldRewrite = true;
+      dataToWrite[key] = value;
+    }
+    if (shouldRewrite) {
+      const stringifyContent = JSON.stringify(dataToWrite, null, 2);
+      fs.writeFileSync(this.filepath, stringifyContent);
     }
   }
 

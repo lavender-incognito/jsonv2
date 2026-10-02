@@ -81,6 +81,22 @@ class Json5 {
     }
   }
 
+  //write Changes
+  public writeChanges() {
+    let shouldRewrite: boolean = false;
+    const entries = this._cache.entries();
+    const dataToWrite: DataStruct = {};
+    for (const entrie of entries) {
+      const [key, { isWritten, value }] = entrie;
+      if (!shouldRewrite && !isWritten) shouldRewrite = true;
+      dataToWrite[key] = value;
+    }
+    if (shouldRewrite) {
+      const stringifyContent = JSON5.stringify(dataToWrite, null, 2);
+      fs.writeFileSync(this.filepath, stringifyContent);
+    }
+  }
+
   //return data
   public data(options?: DataOtpions): DataStruct {
     const writtenOnly = options?.writtenOnly ?? false;
