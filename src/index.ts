@@ -4,8 +4,10 @@ export * from "./json";
 export * from "./json5";
 export * from "./types";
 
-export const jsonps = {
-  $0: Json,
-  $5: Json5,
+const $0 = Json.open;
+const $5 = Json5.open;
+
+export default {
+  $0,
+  $5,
 };
-export default jsonps;
