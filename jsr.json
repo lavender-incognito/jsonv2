@@ -3,5 +3,5 @@
   "version": "1.2.1",
   "license": "MIT",
   "exports": "./src/index.ts",
-  "exclude": ["*.test.ts", "file.json"]
+  "exclude": ["tests/*", "*.test.ts", "file.json"]
 }
