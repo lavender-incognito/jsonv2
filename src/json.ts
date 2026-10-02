@@ -13,8 +13,6 @@ import type {
   SetOptions,
 } from "./types";
 
-//todo add writeAllUpdates();
-
 class Json {
   private _cache: CacheMap = new Map();
   private filepath: string;
@@ -27,7 +25,7 @@ class Json {
   //open json5 file
   static open(filepath: JsonFile, options: OpenOptions): Json {
     if (!filepath.endsWith(".json")) {
-      throw new Error("Filepath must end with .json5");
+      throw new Error("Filepath must end with .json");
     }
 
     if (!fs.existsSync(filepath)) {
@@ -51,6 +49,19 @@ class Json {
     }
   }
 
+  //atomic writes
+  private atomicWrites(data: DataStruct) {
+    const stringifyData = JSON.stringify(data);
+    const tmp = `${this.filepath}.${Date.now()}.tmp`;
+
+    try {
+      fs.writeFileSync(tmp, stringifyData);
+      fs.renameSync(tmp, this.filepath);
+    } catch (e) {
+      throw new Error("Atomic write failed");
+    }
+  }
+
   //write ready data to file
   private writeReadyElements() {
     const entries = this._cache.entries();
@@ -61,9 +72,8 @@ class Json {
       if (!isWritten) continue;
       dataToWrite[key] = value;
     }
-    //convert to string && write  to file
-    const stringifiedData = JSON.stringify(dataToWrite, null, 2)!;
-    fs.writeFileSync(this.filepath, stringifiedData);
+    //atomic write
+    this.atomicWrites(dataToWrite);
   }
 
   //search key in merge
@@ -82,17 +92,22 @@ class Json {
 
   //write Changes
   public writeChanges() {
-    let shouldRewrite: boolean = false;
-    const entries = this._cache.entries();
+    let shouldRewrite = false;
     const dataToWrite: DataStruct = {};
-    for (const entrie of entries) {
-      const [key, { isWritten, value }] = entrie;
-      if (!shouldRewrite && !isWritten) shouldRewrite = true;
-      dataToWrite[key] = value;
+    // collecting data from cache
+    for (const [key, entry] of this._cache) {
+      dataToWrite[key] = entry.value;
+      if (!entry.isWritten) {
+        shouldRewrite = true;
+      }
     }
-    if (shouldRewrite) {
-      const stringifyContent = JSON.stringify(dataToWrite, null, 2);
-      fs.writeFileSync(this.filepath, stringifyContent);
+    //check if should write
+    if (!shouldRewrite) return;
+    //atomic
+    this.atomicWrites(dataToWrite);
+    //write to cache after atomic Writes success
+    for (const [, entry] of this._cache) {
+      entry.isWritten = true;
     }
   }
 

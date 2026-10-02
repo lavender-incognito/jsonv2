@@ -14,7 +14,6 @@ import type {
   SetOptions5,
 } from "./types";
 
-//todo add writeAllUpdates();
 //todo types precisions
 class Json5 {
   private _cache: CacheMap = new Map();
@@ -26,7 +25,7 @@ class Json5 {
   }
 
   //open json5 file
-  static open(filepath: Json5File, options: OpenOptions):Json5 {
+  static open(filepath: Json5File, options: OpenOptions): Json5 {
     if (!filepath.endsWith(".json5")) {
       throw new Error("Filepath must end with .json5");
     }
@@ -52,6 +51,19 @@ class Json5 {
     }
   }
 
+  //atomic writes
+  private atomicWrites(data: DataStruct) {
+    const stringifyData = JSON5.stringify(data);
+    const tmp = `${this.filepath}.${Date.now()}.tmp`;
+
+    try {
+      fs.writeFileSync(tmp, stringifyData);
+      fs.renameSync(tmp, this.filepath);
+    } catch (e) {
+      throw new Error("Atomic write failed");
+    }
+  }
+
   //write ready data to file
   private writeReadyElements() {
     const entries = this._cache.entries();
@@ -62,9 +74,8 @@ class Json5 {
       if (!isWritten) continue;
       dataToWrite[key] = value;
     }
-    //convert to string && write  to file
-    const stringifiedData = JSON5.stringify(dataToWrite, null, 2)!;
-    fs.writeFileSync(this.filepath, stringifiedData);
+    //atomic write
+    this.atomicWrites(dataToWrite);
   }
 
   //search key in merge
@@ -83,20 +94,24 @@ class Json5 {
 
   //write Changes
   public writeChanges() {
-    let shouldRewrite: boolean = false;
-    const entries = this._cache.entries();
+    let shouldRewrite = false;
     const dataToWrite: DataStruct = {};
-    for (const entrie of entries) {
-      const [key, { isWritten, value }] = entrie;
-      if (!shouldRewrite && !isWritten) shouldRewrite = true;
-      dataToWrite[key] = value;
+    // collecting data from cache
+    for (const [key, entry] of this._cache) {
+      dataToWrite[key] = entry.value;
+      if (!entry.isWritten) {
+        shouldRewrite = true;
+      }
     }
-    if (shouldRewrite) {
-      const stringifyContent = JSON5.stringify(dataToWrite, null, 2);
-      fs.writeFileSync(this.filepath, stringifyContent);
+    //check if should write
+    if (!shouldRewrite) return;
+    //atomic
+    this.atomicWrites(dataToWrite);
+    //write to cache after atomic Writes success
+    for (const [, entry] of this._cache) {
+      entry.isWritten = true;
     }
   }
-
   //return data
   public data(options?: DataOtpions): DataStruct {
     const writtenOnly = options?.writtenOnly ?? false;
