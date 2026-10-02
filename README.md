@@ -22,24 +22,69 @@ bunx jsr add @djn/jsonv2
 ### **Example:**
 
 ```ts
-import {Json} from "@djn/jsonv2"
+import { Json } from "@djn/jsonv2";
 
-const instance = Json.openFile("./file.json", {
+const db = Json.open("./data.json", {
   createOnMissing: true,
-  separator: "/",
 });
 
+// Set a value without writing it to disk
+db.set("username", "lavender");
 
-//classic apis:
-// set
-instance.set(key:string, value:any , save?:boolean);
-// get 
-instance.get<string>(key: string);
-// has
-instance.has(key: string);
-// del
-instance.delete(key: string , save?:boolean);
+// Set a value and persist it immediately
+db.set("age", 19, { write: true });
 
-//save edits 
-instance.save();
+// Read a value
+const username = db.get<string>("username");
+
+// Check whether a key exists
+const exists = db.has("username");
+
+// Check whether a key is persisted
+const persisted = db.has("age", {
+  wrinttenOnlyMerge: true,
+});
+
+// Set multiple values at once
+db.setMany(
+  [
+    { key: "country", value: "Morocco" },
+    { key: "language", value: "English" },
+    { key: "age", value: 20 },
+  ],
+  {
+    write: true,
+    onConflit: "update", // or skip 
+  },
+);
+
+// Read multiple values
+const [country, language, age] = db.getMany<string[]>(
+  "country",
+  "language",
+  "age",
+);
+
+// Read all cached data
+const data = db.data();
+
+// Read only persisted data
+const persistedData = db.data({
+  writtenOnly: true,
+});
+
+// Check for null values
+db.set("token", null);
+
+const isNull = db.isNull("token");
+const isNotNull = db.isNonNull("token");
+
+// Remove a value
+db.delete("token");
+
+// Remove a value and persist the change
+db.delete("age", { write: true });
+
+// Persist any pending changes
+db.writeChanges();
 ```
