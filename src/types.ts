@@ -1,5 +1,5 @@
 //shared
-export type OpenOptions = { createOnMissing?: boolean};
+export type OpenOptions = { createOnMissing?: boolean };
 export type DataStruct = Record<string, any>;
 export type CacheMap = Map<string, { isWritten: boolean; value: any }>;
 export type Merge = "written" | "unwritten";
@@ -20,3 +20,4 @@ export type SetOptions5 = { write?: boolean };
 export type HasOptions5 = { wrinttenOnlyMerge: boolean };
 export type DeleteOptions5 = { write?: boolean };
 export type SetManyOptions5 = { write?: boolean; onConflit: ConflitActions };
+

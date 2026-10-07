@@ -1,6 +1,6 @@
 {
-  "name": "@djn/jsonv2",
-  "version": "1.2.1",
+  "name": "@lavender/jsonv2",
+  "version": "1.0.0",
   "license": "MIT",
   "exports": "./src/index.ts",
   "exclude": ["tests/*", "*.test.ts", "file.json"]

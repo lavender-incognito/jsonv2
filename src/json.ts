@@ -13,6 +13,7 @@ import type {
   SetOptions,
 } from "./types";
 
+
 class Json {
   private _cache: CacheMap = new Map();
   private filepath: string;
