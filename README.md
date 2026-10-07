@@ -16,15 +16,20 @@ A simple json file apis , support deep path , +15 api.
 ## Installation
 
 ```bash
-bunx jsr add @djn/jsonv2
+bunx jsr add @lavender/jsonv2
 ```
 
 ### **Example:**
 
 ```ts
-import { Json } from "@djn/jsonv2";
+import { Json, Json5 } from "@djn/jsonv2";
 
+//json
 const db = Json.open("./data.json", {
+  createOnMissing: true,
+});
+// json5
+const db = Json5.open("./data.json5", {
   createOnMissing: true,
 });
 
@@ -54,7 +59,7 @@ db.setMany(
   ],
   {
     write: true,
-    onConflit: "update", // or skip 
+    onConflit: "update", // or skip
   },
 );
 
