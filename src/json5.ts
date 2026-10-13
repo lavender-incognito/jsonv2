@@ -53,7 +53,7 @@ class Json5 {
 
   //atomic writes
   private atomicWrites(data: DataStruct) {
-    const stringifyData = JSON5.stringify(data);
+    const stringifyData = JSON5.stringify(data ,null, 2);
     const tmp = `${this.filepath}.${Date.now()}.tmp`;
 
     try {

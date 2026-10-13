@@ -13,7 +13,6 @@ import type {
   SetOptions,
 } from "./types";
 
-
 class Json {
   private _cache: CacheMap = new Map();
   private filepath: string;
@@ -52,7 +51,7 @@ class Json {
 
   //atomic writes
   private atomicWrites(data: DataStruct) {
-    const stringifyData = JSON.stringify(data);
+    const stringifyData = JSON.stringify(data, null, 2);
     const tmp = `${this.filepath}.${Date.now()}.tmp`;
 
     try {
