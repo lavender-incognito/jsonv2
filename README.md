@@ -15,10 +15,16 @@ and atomic writes.
 - Typed API with generics
 - Works with Bun and Node.js
 
-## Installation
+## Installation for BunJS
 
 ```bash
 bunx jsr add @lavender/jsonv2
+```
+
+## Installation for NodeJs
+
+```bash
+npx jsr add @lavender/jsonv2
 ```
 
 ## Quick start
