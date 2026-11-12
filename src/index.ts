@@ -1,4 +1,4 @@
-export * from "./json";
-export * from "./json5";
-export * from "./types";
-
+import { Jsp } from "./main";
+export * from "./main.types";
+export { Jsp };
+export default Jsp;
