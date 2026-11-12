@@ -28,7 +28,7 @@ export class Jsp {
   }
 
   //static
-  static json5(filepath: string) {
+  static json5(filepath: string):Jsp {
     if (!filepath.endsWith(".json5")) {
       throw new LibErr("Filepath must ends with .json5");
     }
@@ -37,7 +37,7 @@ export class Jsp {
 
     return new Jsp(filepath, 5);
   }
-  static json(filepath: string) {
+  static json(filepath: string):Jsp {
     if (!filepath.endsWith(".json")) {
       throw new LibErr("Filepath must ends with .json");
     }
