@@ -96,6 +96,8 @@ Every key lives in one of two layers:
   previous layer for that key.
 - A write persists only written keys; unwritten keys are left out of the file.
 - `writeAll()` persists both layers and promotes every key to written.
+- `reload({ writePending: false })` discards pending values and re-marks every
+  loaded key as written; `{ writePending: true }` persists them first.
 - A failed write rolls the key back to its previous state and throws
   `JsonV2Err`.
 
@@ -109,10 +111,33 @@ db.has("age", { merge: "memory" }); // pending (unwritten layer)
 
 `merge` defaults to `"both"`.
 
+## Reloading
+
+`reload(options)` re-reads the file and replaces the in-memory state. The
+`writePending` option is required:
+
+- `writePending: false` discards pending (unwritten) changes.
+- `writePending: true` persists them first, then reloads.
+
+```ts
+db.set("draft", true); // pending, not on disk
+db.reload({ writePending: false }); // draft is gone, memory matches the file
+
+db.set("draft", true);
+db.reload({ writePending: true }); // draft is written, then reloaded
+```
+
+Every key loaded from the file is marked as written. If the file is missing or
+invalid, `JsonV2Err` is thrown and the previous in-memory state is kept.
+
 ## Null checks
 
 ```ts
-db.set("token", null, { write: true });
+// Set a key to null in memory only
+db.makeNull("token");
+
+// Set a key to null and persist it immediately
+db.makeNull("token", { write: true });
 
 db.isNull("token"); // true
 db.isNotNull("token"); // false
@@ -123,18 +148,6 @@ db.isNotNull("missing"); // false
 
 Both methods return `false` when the key does not exist.
 
-## Errors
-
-All errors are instances of `JsonV2Err` (`error.name === "JsonV2Err"`). They are
-thrown when:
-
-- the file extension is wrong
-- the file does not exist
-- the file contains invalid JSON / JSON5
-- the file root is not an object
-- an atomic write fails
-- a `set` or `delete` write fails (the previous state is restored)
-
 ## Types
 
 ```ts
@@ -144,6 +157,7 @@ import type {
   SetApiOptions,
   HasApiOptions,
   DeleteApiOptions,
+  ReloadApiOptions,
 } from "@djn/jsonv2";
 ```
 

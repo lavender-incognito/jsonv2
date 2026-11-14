@@ -4,6 +4,7 @@ import type {
   DeleteApiOptions,
   HasApiOptions,
   JsonVersion,
+  ReloadApiOptions,
   SetApiOptions,
 } from "./main.types";
 import {
@@ -28,7 +29,7 @@ export class Jsp {
   }
 
   //static
-  static json5(filepath: string):Jsp {
+  static json5(filepath: string): Jsp {
     if (!filepath.endsWith(".json5")) {
       throw new LibErr("Filepath must ends with .json5");
     }
@@ -37,7 +38,7 @@ export class Jsp {
 
     return new Jsp(filepath, 5);
   }
-  static json(filepath: string):Jsp {
+  static json(filepath: string): Jsp {
     if (!filepath.endsWith(".json")) {
       throw new LibErr("Filepath must ends with .json");
     }
@@ -120,6 +121,9 @@ export class Jsp {
       );
     }
   }
+  public makeNull(key: string, options?: SetApiOptions): void {
+    this.set(key, null, options);
+  }
   public get<T = unknown>(key: string): T | undefined {
     const { found, value } = this.lookup(key);
     return found ? (value as T) : undefined;
@@ -188,6 +192,26 @@ export class Jsp {
       if (!smartKey.startsWith(UNWRITED_PRFX)) continue;
       this.mem.delete(smartKey);
       this.mem.set(WRITED_PRFX + smartKey.slice(UNWRITED_PRFX.length), value);
+    }
+  }
+  public reload(options: ReloadApiOptions): void {
+    // Persist pending (unwritten) changes before discarding them.
+    if (options.writePending) this.writeAll();
+
+    if (!fs.existsSync(this.filepath)) {
+      throw new LibErr(`Filepath not exist:${this.filepath}`);
+    }
+
+    const previous = this.mem;
+    try {
+      this.mem = new Map<string, any>();
+      this.LoadFromFile();
+    } catch (error) {
+      // Keep the previous state if the file cannot be loaded.
+      this.mem = previous;
+      throw new LibErr(
+        `Failed to reload data from file ${(error as Error).message}`,
+      );
     }
   }
 }
